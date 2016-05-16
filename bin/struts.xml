@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"struts-2.0.dtd">
+
+<struts>
+
+	<constant name="struts.custom.i18n.resources" value="language" />
+
+	<package name="default" namespace="/" extends="struts-default">
+
+		<interceptors>
+			<interceptor name="actionTimeInterceptor" class="interceptor.ActionTimeInterceptor"></interceptor>
+
+			<interceptor-stack name="interceptorStack">
+				<interceptor-ref name="actionTimeInterceptor" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+	</package>
+
+	<constant name="struts.convention.result.path" value="/WEB-INF/jsp/" />
+	<constant name="struts.convention.default.parent.package" value="default" />
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.ui.theme" value="simple" />
+
+</struts>

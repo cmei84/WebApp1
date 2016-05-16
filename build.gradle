@@ -1,0 +1,48 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'jacoco'
+
+sourceCompatibility = 1.8
+
+version = '1'
+def version_minor = '00'
+
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+
+repositories { mavenCentral() }
+
+dependencies {
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    compile 'org.apache.struts:struts2-core:2.3.28'
+    compile 'org.apache.struts:struts2-convention-plugin:2.3.28'
+    compile ('opensymphony:oscache:2.4.1'){ exclude  group: 'javax.jms' }
+    compile 'postgresql:postgresql:9.1-901-1.jdbc4'
+    compile 'org.tinylog:tinylog:1.0'
+    testCompile "junit:junit:4.12"
+}
+
+task updateVersion << {
+    ant.propertyfile (file: 'src/main/resources/version.properties'){
+        entry( key: 'application.version', type: 'int', value: version, pattern: '0')
+        entry( key: 'application.version.minor', type: 'int', value: version_minor, pattern: '00')
+        entry( key: 'application.version.buildnumber', type: 'int', operation: '+', value: '1', pattern: '000')
+        entry( key: 'application.version.date', type:'date', value: 'now', pattern:'dd.MM.yyyy')
+    }
+    ant.propertyfile (file: 'sonar.properties'){
+        entry( key: 'sonar.projectVersion', type: 'string', value: version+'.'+version_minor)
+    }
+}
+
+compileJava.dependsOn updateVersion
+
+task copyLibsToDistDirectory(type: Copy) {
+    into 'build/lib'
+    from configurations.testRuntime
+}
+
+war.archiveName 'WebAppGamePriceChecker.war'
+
+war.dependsOn copyLibsToDistDirectory
+
+
